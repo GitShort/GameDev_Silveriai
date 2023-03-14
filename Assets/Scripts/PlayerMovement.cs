@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
     bool isSprinting = false;
     float originalMoveSpeed;
+    bool movementEnabled = true;
 
     [Header("Jumping")]
     [SerializeField] float jumpForce;
@@ -25,8 +28,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float fallMultiplier = 2.5f;
     [SerializeField] bool useLowJump = true;
     [SerializeField] float lowJumpMultiplier = 2f;
-    
-
 
     [Header("Keybinds")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
@@ -56,7 +57,11 @@ public class PlayerMovement : MonoBehaviour
     {
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
-        MyInput();
+        if (movementEnabled)
+        {
+            MyInput();
+        }
+
         SpeedControl();
 
         if (grounded)
@@ -150,5 +155,28 @@ public class PlayerMovement : MonoBehaviour
     {
         Debug.Log("Reset jump");
         readyToJump = true;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag.Equals("Coin"))
+        {
+            other.gameObject.GetComponent<CoinManager>().PickupCoin();
+            Destroy(other.gameObject, 0.05f);
+        }
+
+        if (other.gameObject.tag.Equals("Spike"))
+        {
+            GetComponentInChildren<CapsuleCollider>().gameObject.SetActive(false);
+            rb.isKinematic = true;
+            movementEnabled = false;
+            StartCoroutine(RestartGame());
+        }
+    }
+
+    IEnumerator RestartGame()
+    {
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
