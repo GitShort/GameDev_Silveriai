@@ -47,6 +47,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Particles")]
     [SerializeField] GameObject loseParticles;
 
+    [SerializeField] Animator anim;
+
     Vector3 moveDirection;
     Rigidbody rb;
 
@@ -116,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
         {
             readyToJump = false;
             Jump();
-
+            anim.SetTrigger("isJumping");
             Invoke(nameof(ResetJump), jumpCooldown);
         }
     }
@@ -132,6 +134,12 @@ public class PlayerMovement : MonoBehaviour
         // air
         else if (!grounded)
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+
+        if (moveDirection != Vector3.zero)
+            anim.SetBool("isRunning", true);
+        else
+            anim.SetBool("isRunning", false);
+
     }
 
     void SpeedControl()
