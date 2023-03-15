@@ -32,11 +32,17 @@ public class PlayerMovement : MonoBehaviour
     [Header("Keybinds")]
     [SerializeField] KeyCode jumpKey = KeyCode.Space;
     [SerializeField] KeyCode sprintKey = KeyCode.LeftShift;
+    [SerializeField] KeyCode shootKey = KeyCode.Mouse0;
 
     [Header("Ground check")]
     [SerializeField] float playerHeight;
     [SerializeField] LayerMask whatIsGround;
     bool grounded;
+
+    [Header("Fighting")]
+    [SerializeField] GameObject projectile;
+    [SerializeField] Transform shootingPos;
+    [SerializeField] float shootPower = 20f;
 
     [Header("Particles")]
     [SerializeField] GameObject loseParticles;
@@ -91,6 +97,9 @@ public class PlayerMovement : MonoBehaviour
 
         //Debug.Log(rb.velocity.magnitude);
         BetterJump();
+
+        if (Input.GetKeyDown(shootKey))
+            ShootProjectile();
     }
 
     private void FixedUpdate()
@@ -158,6 +167,12 @@ public class PlayerMovement : MonoBehaviour
     {
         Debug.Log("Reset jump");
         readyToJump = true;
+    }
+
+    void ShootProjectile()
+    {
+        GameObject bullet = Instantiate(projectile, shootingPos.transform.position, shootingPos.transform.rotation);
+        bullet.GetComponent<Rigidbody>().AddRelativeForce(Vector3.up * shootPower, ForceMode.Impulse);
     }
 
     private void OnTriggerEnter(Collider other)
