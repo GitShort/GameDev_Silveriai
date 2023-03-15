@@ -38,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask whatIsGround;
     bool grounded;
 
+    [Header("Particles")]
+    [SerializeField] GameObject loseParticles;
+
     Vector3 moveDirection;
     Rigidbody rb;
 
@@ -167,16 +170,24 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.gameObject.tag.Equals("Spike"))
         {
-            GetComponentInChildren<CapsuleCollider>().gameObject.SetActive(false);
+            GameObject deathParticles = Instantiate(loseParticles, transform.position, Quaternion.identity);
+            deathParticles.GetComponent<ParticleSystem>().Play();
+            StartCoroutine(DisablePlayerChar());
             rb.isKinematic = true;
             movementEnabled = false;
             StartCoroutine(RestartGame());
         }
     }
 
+    IEnumerator DisablePlayerChar()
+    {
+        yield return new WaitForSeconds(0.1f);
+        GetComponentInChildren<CapsuleCollider>().gameObject.SetActive(false);
+    }
+
     IEnumerator RestartGame()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

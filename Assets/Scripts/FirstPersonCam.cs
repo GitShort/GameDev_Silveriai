@@ -8,7 +8,6 @@ public class FirstPersonCam : MonoBehaviour
     [SerializeField] float sensY;
 
     [SerializeField] Transform orientation;
-    [SerializeField] GameObject cameraObject;
 
     float xRotation;
     float yRotation;
@@ -36,7 +35,7 @@ public class FirstPersonCam : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -90, 90f);
 
         // Rotate cam and orientation
-        cameraObject.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
         orientation.rotation = Quaternion.Euler(0, yRotation, 0);
     }
 }
