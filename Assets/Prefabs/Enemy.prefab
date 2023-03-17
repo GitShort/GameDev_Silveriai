@@ -91,6 +91,7 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 8
+  destroyParticles: {fileID: 180128, guid: 764a0eb1a09c42f42be5cc2961d58094, type: 3}
 --- !u!1 &6079483547025016964
 GameObject:
   m_ObjectHideFlags: 0

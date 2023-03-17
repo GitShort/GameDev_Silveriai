@@ -251,6 +251,9 @@ MonoBehaviour:
   shootingPos: {fileID: 4507647928978430683}
   shootPower: 20
   loseParticles: {fileID: 191186, guid: 079954accd64b32419ec069129c81273, type: 3}
+  shootSound: {fileID: 8300000, guid: cd3db1ce272c2944cbf78d4275f53495, type: 3}
+  jumpSound: {fileID: 8300000, guid: 282a105d64767f242a222c1e741d3281, type: 3}
+  loseSound: {fileID: 8300000, guid: 75ec5da2f9b5fa947a7746131f6c935c, type: 3}
   anim: {fileID: 7543881301232731006}
   physicMaterial: {fileID: 13400000, guid: be2d1076ee62e454d989398a6d7eb287, type: 2}
   sideScroller: 1
@@ -325,7 +328,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 4a72f4568b55fbd43afd54ad48e0791c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.85345
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4a72f4568b55fbd43afd54ad48e0791c,
         type: 3}

@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour
     [Header("Other")]
     [SerializeField] Animator anim;
     [SerializeField] LayerMask playerMask;
+    [SerializeField] GameObject destroyParticles;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +44,9 @@ public class Enemy : MonoBehaviour
         health -= damage;
         if (health <= 0)
         {
+            var particles = Instantiate(destroyParticles, transform.position, Quaternion.identity);
+            particles.GetComponent<ParticleSystem>().Play();
+
             Destroy(this.gameObject);
         }
     }

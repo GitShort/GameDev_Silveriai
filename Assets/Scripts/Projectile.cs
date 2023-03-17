@@ -8,6 +8,9 @@ public class Projectile : MonoBehaviour
     [SerializeField] GameObject destroyParticles;
     [SerializeField] bool bouncy = false;
 
+    [SerializeField] AudioClip destroySound;
+    [SerializeField] AudioClip collideSound;
+
     private void Start()
     {
         StartCoroutine(DestroyParticle(5f));
@@ -38,10 +41,12 @@ public class Projectile : MonoBehaviour
             collision.gameObject.GetComponentInParent<Enemy>().LoseHealth(damage);
             StartCoroutine(DestroyParticle(0f));
         }
+        AudioSource.PlayClipAtPoint(collideSound, transform.position);
     }
 
     IEnumerator DestroyParticle(float delay)
     {
+        AudioSource.PlayClipAtPoint(destroySound, transform.position);
         yield return new WaitForSeconds(delay);
         var particles = Instantiate(destroyParticles, transform.position, Quaternion.identity);
         particles.GetComponent<ParticleSystem>().Play();

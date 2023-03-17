@@ -47,6 +47,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Particles")]
     [SerializeField] GameObject loseParticles;
 
+    [Header("Sounds")]
+    [SerializeField] AudioClip shootSound;
+    [SerializeField] AudioClip jumpSound;
+    [SerializeField] AudioClip loseSound;
+
     [Header("Other")]
     [SerializeField] Animator anim;
 
@@ -173,6 +178,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
+        AudioSource.PlayClipAtPoint(jumpSound, transform.position);
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
@@ -198,6 +204,7 @@ public class PlayerMovement : MonoBehaviour
 
     void ShootProjectile()
     {
+        AudioSource.PlayClipAtPoint(shootSound, transform.position);
         GameObject bullet = Instantiate(projectile, shootingPos.transform.position, shootingPos.transform.rotation);
         bullet.GetComponent<Rigidbody>().AddRelativeForce(Vector3.up * shootPower, ForceMode.Impulse);
     }
@@ -226,6 +233,7 @@ public class PlayerMovement : MonoBehaviour
 
     void PlayerLose()
     {
+        AudioSource.PlayClipAtPoint(loseSound, transform.position);
         GameObject deathParticles = Instantiate(loseParticles, transform.position, Quaternion.identity);
         deathParticles.GetComponent<ParticleSystem>().Play();
         StartCoroutine(DisablePlayerChar());
