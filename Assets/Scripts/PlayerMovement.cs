@@ -89,47 +89,51 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
-
-        if (movementEnabled)
+        if (GameManager.Instance.GameStarted)
         {
-            MyInput();
-        }
+            grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
-        SpeedControl();
+            if (movementEnabled)
+            {
+                MyInput();
+            }
 
-        if (grounded)
-        {
-            physicMaterial.dynamicFriction = friction;
-            rb.drag = groundDrag;
-        }
-        else
-        {
-            physicMaterial.dynamicFriction = 0.01f;
-            rb.drag = 0;
-        }
+            SpeedControl();
 
-        if (Input.GetKey(sprintKey) && !isSprinting && grounded)
-        {
-            isSprinting = true;
-            moveSpeed *= sprintSpeedMultiplier;
-        }
-        else if (!Input.GetKey(sprintKey) && isSprinting && grounded)
-        {
-            isSprinting = false;
-            moveSpeed = originalMoveSpeed;
-        }
+            if (grounded)
+            {
+                physicMaterial.dynamicFriction = friction;
+                rb.drag = groundDrag;
+            }
+            else
+            {
+                physicMaterial.dynamicFriction = 0.01f;
+                rb.drag = 0;
+            }
 
-        //Debug.Log(rb.velocity.magnitude);
-        BetterJump();
+            if (Input.GetKey(sprintKey) && !isSprinting && grounded)
+            {
+                isSprinting = true;
+                moveSpeed *= sprintSpeedMultiplier;
+            }
+            else if (!Input.GetKey(sprintKey) && isSprinting && grounded)
+            {
+                isSprinting = false;
+                moveSpeed = originalMoveSpeed;
+            }
 
-        if (Input.GetKeyDown(shootKey))
-            ShootProjectile();
+            //Debug.Log(rb.velocity.magnitude);
+            BetterJump();
+
+            if (Input.GetKeyDown(shootKey))
+                ShootProjectile();
+        }
     }
 
     private void FixedUpdate()
     {
-        MovePlayer();
+        if (GameManager.Instance.GameStarted)
+            MovePlayer();
     }
 
     void MyInput()

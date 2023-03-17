@@ -149,7 +149,7 @@ MonoBehaviour:
     type: 3}
   shootingPos: {fileID: 528526797400989961}
   shootPower: 20
-  loseParticles: {fileID: 191186, guid: 079954accd64b32419ec069129c81273, type: 3}
+  loseParticles: {fileID: 180128, guid: 764a0eb1a09c42f42be5cc2961d58094, type: 3}
   shootSound: {fileID: 8300000, guid: cd3db1ce272c2944cbf78d4275f53495, type: 3}
   jumpSound: {fileID: 8300000, guid: 282a105d64767f242a222c1e741d3281, type: 3}
   loseSound: {fileID: 8300000, guid: 75ec5da2f9b5fa947a7746131f6c935c, type: 3}

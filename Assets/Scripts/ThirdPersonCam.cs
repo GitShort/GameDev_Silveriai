@@ -32,56 +32,87 @@ public class ThirdPersonCam : MonoBehaviour
         mainCamera = GetComponent<Camera>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        switch (currentStyle)
+        {
+            case CameraStyle.Basic:
+                BasicCameraStyle();
+                mainCamera.orthographic = false;
+                SwitchCameraStyle(CameraStyle.Basic);
+                break;
+            case CameraStyle.Topdown:
+                BasicCameraStyle();
+                mainCamera.orthographic = false;
+                SwitchCameraStyle(CameraStyle.Topdown);
+                break;
+            case CameraStyle.TopdownOrto:
+                BasicCameraStyle();
+                SwitchCameraStyle(CameraStyle.TopdownOrto);
+                mainCamera.orthographic = true;
+                break;
+            case CameraStyle.SideScroller:
+                SideScrollingCameraStyle();
+                SwitchCameraStyle(CameraStyle.Topdown);
+                break;
+        }
     }
 
     private void Update()
     {
-        // switch styles
-        if (Input.GetKeyDown(KeyCode.Alpha1)) SwitchCameraStyle(CameraStyle.Basic);
-        if (Input.GetKeyDown(KeyCode.Alpha2)) SwitchCameraStyle(CameraStyle.Topdown);
-        if (Input.GetKeyDown(KeyCode.Alpha3)) SwitchCameraStyle(CameraStyle.TopdownOrto);
+        if (GameManager.Instance.GameStarted)
+        {
+            // switch styles
+            if (Input.GetKeyDown(KeyCode.Alpha1)) SwitchCameraStyle(CameraStyle.Basic);
+            if (Input.GetKeyDown(KeyCode.Alpha2)) SwitchCameraStyle(CameraStyle.Topdown);
+            if (Input.GetKeyDown(KeyCode.Alpha3)) SwitchCameraStyle(CameraStyle.TopdownOrto);
 
-        // rotate orientation
-        Vector3 viewDir = player.position - new Vector3(transform.position.x, player.position.y, transform.position.z);
-        orientation.forward = viewDir.normalized;
-
-
+            // rotate orientation
+            Vector3 viewDir = player.position - new Vector3(transform.position.x, player.position.y, transform.position.z);
+            orientation.forward = viewDir.normalized;
+        }
     }
     private void FixedUpdate()
     {
-        // roate player object
-        if (currentStyle == CameraStyle.Basic || currentStyle == CameraStyle.Topdown)
+        if (GameManager.Instance.GameStarted)
         {
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
-            Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
+            // roate player object
+            if (currentStyle == CameraStyle.Basic || currentStyle == CameraStyle.Topdown)
+            {
+                BasicCameraStyle();
+                mainCamera.orthographic = false;
+            }
 
-            if (inputDir != Vector3.zero)
-                playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
-            mainCamera.orthographic = false;
+            if (currentStyle == CameraStyle.TopdownOrto)
+            {
+                BasicCameraStyle();
+                mainCamera.orthographic = true;
+            }
+
+            if (currentStyle == CameraStyle.SideScroller)
+            {
+                SideScrollingCameraStyle();
+            }
         }
+    }
 
-        if (currentStyle == CameraStyle.TopdownOrto)
-        {
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
-            Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
+    void BasicCameraStyle()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+        Vector3 inputDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-            if (inputDir != Vector3.zero)
-                playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
-            mainCamera.orthographic = true;
-        }
+        if (inputDir != Vector3.zero)
+            playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
+    }
 
-        if (currentStyle == CameraStyle.SideScroller)
-        {
-            float horizontalInput = Input.GetAxis("Horizontal");
-            //float verticalInput = Input.GetAxis("Vertical");
-            Vector3 inputDir = orientation.right * horizontalInput;
+    void SideScrollingCameraStyle()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        Vector3 inputDir = orientation.right * horizontalInput;
 
-            if (inputDir != Vector3.zero)
-                playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
-            mainCamera.orthographic = false;
-        }
+        if (inputDir != Vector3.zero)
+            playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
+        mainCamera.orthographic = false;
     }
 
     private void SwitchCameraStyle(CameraStyle newStyle)
