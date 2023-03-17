@@ -47,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Particles")]
     [SerializeField] GameObject loseParticles;
 
+    [Header("Other")]
     [SerializeField] Animator anim;
 
     Vector3 moveDirection;
@@ -55,6 +56,23 @@ public class PlayerMovement : MonoBehaviour
     float horizontalInput;
     float verticalInput;
     [SerializeField] PhysicMaterial physicMaterial;
+    [SerializeField] bool sideScroller = false;
+
+
+    public static PlayerMovement Instance { get; private set; }
+    private void Awake()
+    {
+        // If there is an instance, and it's not me, delete myself.
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     private void Start()
     {
@@ -112,7 +130,8 @@ public class PlayerMovement : MonoBehaviour
     void MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        if (!sideScroller)
+            verticalInput = Input.GetAxisRaw("Vertical");
 
         if (Input.GetKey(jumpKey) && readyToJump && grounded)
         {
@@ -193,13 +212,26 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.gameObject.tag.Equals("Spike"))
         {
-            GameObject deathParticles = Instantiate(loseParticles, transform.position, Quaternion.identity);
-            deathParticles.GetComponent<ParticleSystem>().Play();
-            StartCoroutine(DisablePlayerChar());
-            rb.isKinematic = true;
-            movementEnabled = false;
-            StartCoroutine(RestartGame());
+            PlayerLose();
         }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag.Equals("Enemy"))
+        {
+            PlayerLose();
+        }
+    }
+
+    void PlayerLose()
+    {
+        GameObject deathParticles = Instantiate(loseParticles, transform.position, Quaternion.identity);
+        deathParticles.GetComponent<ParticleSystem>().Play();
+        StartCoroutine(DisablePlayerChar());
+        rb.isKinematic = true;
+        movementEnabled = false;
+        StartCoroutine(RestartGame());
     }
 
     IEnumerator DisablePlayerChar()

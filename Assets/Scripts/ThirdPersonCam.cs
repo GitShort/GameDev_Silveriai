@@ -23,7 +23,8 @@ public class ThirdPersonCam : MonoBehaviour
     {
         Basic,
         Topdown,
-        TopdownOrto
+        TopdownOrto,
+        SideScroller
     }
 
     private void Start()
@@ -44,8 +45,12 @@ public class ThirdPersonCam : MonoBehaviour
         Vector3 viewDir = player.position - new Vector3(transform.position.x, player.position.y, transform.position.z);
         orientation.forward = viewDir.normalized;
 
+
+    }
+    private void FixedUpdate()
+    {
         // roate player object
-        if(currentStyle == CameraStyle.Basic || currentStyle == CameraStyle.Topdown)
+        if (currentStyle == CameraStyle.Basic || currentStyle == CameraStyle.Topdown)
         {
             float horizontalInput = Input.GetAxis("Horizontal");
             float verticalInput = Input.GetAxis("Vertical");
@@ -66,6 +71,17 @@ public class ThirdPersonCam : MonoBehaviour
                 playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
             mainCamera.orthographic = true;
         }
+
+        if (currentStyle == CameraStyle.SideScroller)
+        {
+            float horizontalInput = Input.GetAxis("Horizontal");
+            //float verticalInput = Input.GetAxis("Vertical");
+            Vector3 inputDir = orientation.right * horizontalInput;
+
+            if (inputDir != Vector3.zero)
+                playerObj.forward = Vector3.Slerp(playerObj.forward, inputDir.normalized, Time.deltaTime * rotationSpeed);
+            mainCamera.orthographic = false;
+        }
     }
 
     private void SwitchCameraStyle(CameraStyle newStyle)
@@ -77,6 +93,8 @@ public class ThirdPersonCam : MonoBehaviour
         if (newStyle == CameraStyle.Basic) thirdPersonCam.SetActive(true);
         if (newStyle == CameraStyle.Topdown) topDownCam.SetActive(true);
         if (newStyle == CameraStyle.TopdownOrto) topDownCamOrto.SetActive(true);
+
+        if (newStyle == CameraStyle.SideScroller) topDownCam.SetActive(true);
 
         currentStyle = newStyle;
     }

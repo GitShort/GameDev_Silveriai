@@ -7,17 +7,18 @@ TagManager:
   - Coin
   - Spike
   - Projectile
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - Ground
   - Coin
   - Projectile
-  - 
+  - Enemy
   - 
   - 
   - 
