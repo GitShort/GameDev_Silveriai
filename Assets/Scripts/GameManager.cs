@@ -32,6 +32,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] string gameOverMessage;
     [SerializeField] string endGameMessage;
     [SerializeField] string endGameMessageEnd;
+    [SerializeField] bool showRemainingTime = false;
+
+    [Header("Pause")]
+    [SerializeField] GameObject pauseScreen;
+    [SerializeField] KeyCode pauseKey = KeyCode.Escape;
+    bool isPaused = false;
 
     int collectedCoins = 0;
     CoinManager[] CoinsInScene;
@@ -62,6 +68,7 @@ public class GameManager : MonoBehaviour
         CoinsInScene = FindObjectsOfType<CoinManager>(false);
         mainGameScreen.SetActive(true);
         endGameScreen.SetActive(false);
+        pauseScreen.SetActive(false);
         if (!increaseTimer)
             timerText.text = timeCount.ToString();
         else
@@ -81,6 +88,14 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(pauseKey))
+        {
+            if (!isPaused)
+                PauseGame();
+            else
+                ResumeGame();
+        }
+
         if (gameStarted)
         {
             if (increaseTimer)
@@ -128,10 +143,11 @@ public class GameManager : MonoBehaviour
 
     public void MainMenuButton()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
 
-    public void RestartButton()
+    public void RestartGame()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -147,6 +163,30 @@ public class GameManager : MonoBehaviour
         endGameScreen.SetActive(true);
         endGameMessageText.text = endGameMessage + " " + collectedCoins.ToString() + " " + endGameMessageEnd;
         gameOverText.text = gameOverMessage;
+        if (!showRemainingTime)
+        {
+            timerText.gameObject.SetActive(false);
+        }
+    }
+
+    void PauseGame()
+    {
+        isPaused = true;
+        pauseScreen.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Time.timeScale = 0f;
+    }
+
+    public void ResumeGame()
+    {
+        isPaused = false;
+        pauseScreen.SetActive(false);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        Time.timeScale = 1f;
     }
 
     public void UpdateUI()

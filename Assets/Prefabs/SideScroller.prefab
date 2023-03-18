@@ -171,9 +171,9 @@ MonoBehaviour:
   playerObj: {fileID: 6958935414642444177}
   rb: {fileID: 6958935415563245335}
   rotationSpeed: 1000
-  thirdPersonCam: {fileID: 0}
+  thirdPersonCam: {fileID: 5500558036558715150}
   topDownCam: {fileID: 5500558036558715150}
-  topDownCamOrto: {fileID: 0}
+  topDownCamOrto: {fileID: 5500558036558715150}
   currentStyle: 3
 --- !u!1 &4974566307941342927
 GameObject:
