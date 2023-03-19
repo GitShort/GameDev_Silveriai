@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
     [Header("Game Start")]
     [SerializeField] bool enableCountdown = true;
     [SerializeField] int countdown = 3;
-    [SerializeField] TextMeshProUGUI countdownText;
     [SerializeField] string countdownEndMessage;
     [SerializeField] AudioClip countdownSound;
     [SerializeField] AudioClip countdownEndSound;
@@ -19,25 +18,31 @@ public class GameManager : MonoBehaviour
     [Header("Main gameplay")]
     [SerializeField] bool increaseTimer = false;
     [SerializeField] float timeCount = 30f;
-    [SerializeField] TextMeshProUGUI timeCountText;
     [SerializeField] string timeCountMessage;
-    [SerializeField] TextMeshProUGUI timerText;
-    [SerializeField] TextMeshProUGUI coinsText;
-    [SerializeField] GameObject mainGameScreen;
 
     [Header("Game end")]
-    [SerializeField] GameObject endGameScreen;
-    [SerializeField] TextMeshProUGUI gameOverText;
-    [SerializeField] TextMeshProUGUI endGameMessageText;
     [SerializeField] string gameOverMessage;
     [SerializeField] string endGameMessage;
     [SerializeField] string endGameMessageEnd;
     [SerializeField] bool showRemainingTime = false;
+    [SerializeField] bool showHighscore = false;
+    [SerializeField] string highscoreMessage;
 
     [Header("Pause")]
-    [SerializeField] GameObject pauseScreen;
     [SerializeField] KeyCode pauseKey = KeyCode.Escape;
     bool isPaused = false;
+
+    [Header("--- UI Objects ---")]
+    [SerializeField] GameObject mainGameScreen;
+    [SerializeField] GameObject endGameScreen;
+    [SerializeField] GameObject pauseScreen;
+    [SerializeField] TextMeshProUGUI countdownText;
+    [SerializeField] TextMeshProUGUI timeCountText;
+    [SerializeField] TextMeshProUGUI timerText;
+    [SerializeField] TextMeshProUGUI coinsText;
+    [SerializeField] TextMeshProUGUI gameOverText;
+    [SerializeField] TextMeshProUGUI endGameMessageText;
+    [SerializeField] TextMeshProUGUI highScoreText;
 
     int collectedCoins = 0;
     CoinManager[] CoinsInScene;
@@ -112,7 +117,6 @@ public class GameManager : MonoBehaviour
                 if (timeCount > 0)
                 {
                     timeCount -= Time.deltaTime;
-
                 }
                 else if (timeCount <= 0 && !endGameScreen.activeInHierarchy)
                 {
@@ -121,6 +125,19 @@ public class GameManager : MonoBehaviour
                 }
                 timerText.text = Mathf.RoundToInt(timeCount).ToString();
             }
+        }
+
+        // debug scene change
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            if (SceneManager.GetActiveScene().buildIndex < 5)
+
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                ResumeGame();
+            }
+            else
+                MainMenuButton();
         }
     }
 
@@ -143,6 +160,8 @@ public class GameManager : MonoBehaviour
 
     public void MainMenuButton()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         Time.timeScale = 1f;
         SceneManager.LoadScene(0);
     }
@@ -163,10 +182,44 @@ public class GameManager : MonoBehaviour
         endGameScreen.SetActive(true);
         endGameMessageText.text = endGameMessage + " " + collectedCoins.ToString() + " " + endGameMessageEnd;
         gameOverText.text = gameOverMessage;
+
         if (!showRemainingTime)
         {
             timerText.gameObject.SetActive(false);
         }
+
+        if (increaseTimer)
+            HighScoreTracker.Instance.PreviousScore = Mathf.RoundToInt(timeCount);
+        else
+            HighScoreTracker.Instance.PreviousScore = collectedCoins;
+
+
+        if (showHighscore && HighScoreTracker.Instance.PreviousScore > 0)
+        {
+            if (increaseTimer)
+            {
+                if (HighScoreTracker.Instance.firstScore)
+                {
+                    HighScoreTracker.Instance.firstScore = false;
+                    HighScoreTracker.Instance.Highscore = 1000;
+                }
+                if (HighScoreTracker.Instance.PreviousScore < HighScoreTracker.Instance.Highscore)
+                {
+                    HighScoreTracker.Instance.Highscore = HighScoreTracker.Instance.PreviousScore;
+                }
+            }
+            else
+            {
+                if (HighScoreTracker.Instance.PreviousScore > HighScoreTracker.Instance.Highscore)
+                {
+                    HighScoreTracker.Instance.Highscore = HighScoreTracker.Instance.PreviousScore;
+                }
+            }
+            HighScoreTracker.Instance.PreviousScore = 0;
+        }
+        if (showHighscore)
+            highScoreText.text = highscoreMessage + " " + HighScoreTracker.Instance.Highscore;
+
     }
 
     void PauseGame()
@@ -175,7 +228,6 @@ public class GameManager : MonoBehaviour
         pauseScreen.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         Time.timeScale = 0f;
     }
 
@@ -185,7 +237,6 @@ public class GameManager : MonoBehaviour
         pauseScreen.SetActive(false);
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
         Time.timeScale = 1f;
     }
 

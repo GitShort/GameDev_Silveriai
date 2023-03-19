@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] float moveSpeed;
-    [SerializeField] Transform orientation;
     [SerializeField] float groundDrag;
     [SerializeField] float friction;
 
@@ -34,15 +33,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] KeyCode sprintKey = KeyCode.LeftShift;
     [SerializeField] KeyCode shootKey = KeyCode.Mouse0;
 
-    [Header("Ground check")]
-    [SerializeField] float playerHeight;
-    [SerializeField] LayerMask whatIsGround;
-    bool grounded;
-
     [Header("Fighting")]
-    [SerializeField] GameObject projectile;
-    [SerializeField] Transform shootingPos;
     [SerializeField] float shootPower = 20f;
+    bool readyToShoot = true;
 
     [Header("Particles")]
     [SerializeField] GameObject loseParticles;
@@ -52,16 +45,26 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] AudioClip jumpSound;
     [SerializeField] AudioClip loseSound;
 
-    [Header("Other")]
+    [Header("")]
+    [Header("")]
+    [Header("----------------------OTHER------------------")]
+    [SerializeField] Transform orientation;
     [SerializeField] Animator anim;
+    [SerializeField] PhysicMaterial physicMaterial;
+    [SerializeField] GameObject projectile;
+    [SerializeField] Transform shootingPos;
+    [SerializeField] bool sideScroller = false;
+    [Header("Ground check")]
+    [SerializeField] float playerHeight;
+    [SerializeField] LayerMask whatIsGround;
+    bool grounded;
 
     Vector3 moveDirection;
     Rigidbody rb;
 
     float horizontalInput;
     float verticalInput;
-    [SerializeField] PhysicMaterial physicMaterial;
-    [SerializeField] bool sideScroller = false;
+
 
 
     public static PlayerMovement Instance { get; private set; }
@@ -125,8 +128,10 @@ public class PlayerMovement : MonoBehaviour
             //Debug.Log(rb.velocity.magnitude);
             BetterJump();
 
-            if (Input.GetKeyDown(shootKey))
-                ShootProjectile();
+            if (Input.GetKeyDown(shootKey) && readyToShoot)
+            {
+                StartCoroutine(ShootProjectile());
+            }
         }
     }
 
@@ -206,11 +211,14 @@ public class PlayerMovement : MonoBehaviour
         readyToJump = true;
     }
 
-    void ShootProjectile()
+    IEnumerator ShootProjectile()
     {
+        readyToShoot = false; 
         AudioSource.PlayClipAtPoint(shootSound, transform.position);
         GameObject bullet = Instantiate(projectile, shootingPos.transform.position, shootingPos.transform.rotation);
         bullet.GetComponent<Rigidbody>().AddRelativeForce(Vector3.up * shootPower, ForceMode.Impulse);
+        yield return new WaitForSeconds(.75f);
+        readyToShoot = true;
     }
 
     private void OnTriggerEnter(Collider other)

@@ -6,9 +6,21 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
+    path: Assets/Main/Scenes/MainMenu.unity
     guid: b3d5b3934607e074182cfcc60c4fd84f
   - enabled: 1
-    path: Assets/Scenes/GameLevel.unity
+    path: Assets/Main/Scenes/Level_Sidescroller.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Main/Scenes/Level_Firstperson.unity
+    guid: 71d4253011b4dec45a2010fbd392240d
+  - enabled: 1
+    path: Assets/Main/Scenes/Level_Thirdperson.unity
+    guid: bc29b600f8534a0438ec445a6d81f4b1
+  - enabled: 1
+    path: Assets/Main/Scenes/Level_Topdown.unity
+    guid: 9f77bd4d7b2e9d3438b6e04f619400af
+  - enabled: 1
+    path: Assets/Main/Scenes/Level_TopdownOrto.unity
+    guid: 7e168b5f6ebc62348b4fe4d07cceeca3
   m_configObjects: {}
