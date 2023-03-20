@@ -10,6 +10,8 @@ TagManager:
   - Enemy
   - GameManager
   - HighscoreTracker
+  - Health
+  - Bullets
   layers:
   - Default
   - TransparentFX

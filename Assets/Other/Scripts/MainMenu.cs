@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] int loadLevel = 1;
      // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +17,7 @@ public class MainMenu : MonoBehaviour
         
     }
 
-    public void StartGame()
+    public void StartGame(int loadLevel)
     {
         SceneManager.LoadScene(loadLevel);
     }

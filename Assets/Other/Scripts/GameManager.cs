@@ -43,6 +43,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI gameOverText;
     [SerializeField] TextMeshProUGUI endGameMessageText;
     [SerializeField] TextMeshProUGUI highScoreText;
+    [SerializeField] Slider healthSlider;
+    [SerializeField] TextMeshProUGUI healthNum;
+    [SerializeField] TextMeshProUGUI bulletsNum;
 
     int collectedCoins = 0;
     CoinManager[] CoinsInScene;
@@ -64,13 +67,14 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+        CoinsInScene = FindObjectsOfType<CoinManager>(false);
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
-        CoinsInScene = FindObjectsOfType<CoinManager>(false);
+        UpdateUI();
         mainGameScreen.SetActive(true);
         endGameScreen.SetActive(false);
         pauseScreen.SetActive(false);
@@ -243,5 +247,9 @@ public class GameManager : MonoBehaviour
     public void UpdateUI()
     {
         coinsText.text = "Coins: " + collectedCoins.ToString();
+        healthSlider.maxValue = PlayerMovement.Instance.Health;
+        healthSlider.value = PlayerMovement.Instance.CurrHealth;
+        healthNum.text = PlayerMovement.Instance.CurrHealth.ToString();
+        bulletsNum.text = "Bullets: " + PlayerMovement.Instance.Bullets.ToString();
     }
 }

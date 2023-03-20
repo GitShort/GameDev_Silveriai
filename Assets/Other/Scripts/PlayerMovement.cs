@@ -34,6 +34,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] KeyCode shootKey = KeyCode.Mouse0;
 
     [Header("Fighting")]
+    [SerializeField] int health = 5;
+    int currHealth;
+    [SerializeField] int bullets = 10;
     [SerializeField] float shootPower = 20f;
     bool readyToShoot = true;
 
@@ -44,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] AudioClip shootSound;
     [SerializeField] AudioClip jumpSound;
     [SerializeField] AudioClip loseSound;
+    [SerializeField] AudioClip getHitSound;
 
     [Header("")]
     [Header("")]
@@ -65,7 +69,10 @@ public class PlayerMovement : MonoBehaviour
     float horizontalInput;
     float verticalInput;
 
+    public int Health { get { return health; } set { health = value; } }
+    public int CurrHealth { get { return currHealth; } set { currHealth = value; } }
 
+    public int Bullets { get { return bullets; } set { bullets = value; } }
 
     public static PlayerMovement Instance { get; private set; }
     private void Awake()
@@ -80,10 +87,12 @@ public class PlayerMovement : MonoBehaviour
         {
             Instance = this;
         }
+        currHealth = health;
     }
 
     private void Start()
     {
+
         originalMoveSpeed = moveSpeed;
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
@@ -128,7 +137,7 @@ public class PlayerMovement : MonoBehaviour
             //Debug.Log(rb.velocity.magnitude);
             BetterJump();
 
-            if (Input.GetKeyDown(shootKey) && readyToShoot)
+            if (Input.GetKeyDown(shootKey) && readyToShoot && bullets > 0)
             {
                 StartCoroutine(ShootProjectile());
             }
@@ -207,16 +216,17 @@ public class PlayerMovement : MonoBehaviour
 
     void ResetJump()
     {
-        Debug.Log("Reset jump");
         readyToJump = true;
     }
 
     IEnumerator ShootProjectile()
     {
-        readyToShoot = false; 
+        readyToShoot = false;
+        bullets--;
         AudioSource.PlayClipAtPoint(shootSound, transform.position);
         GameObject bullet = Instantiate(projectile, shootingPos.transform.position, shootingPos.transform.rotation);
         bullet.GetComponent<Rigidbody>().AddRelativeForce(Vector3.up * shootPower, ForceMode.Impulse);
+        GameManager.Instance.UpdateUI();
         yield return new WaitForSeconds(.75f);
         readyToShoot = true;
     }
@@ -231,13 +241,46 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.gameObject.tag.Equals("Spike"))
         {
+            currHealth = 0;
             PlayerLose();
+        }
+
+        if (other.gameObject.tag.Equals("Health"))
+        {
+            var go = other.gameObject.GetComponent<PickupManager>();
+
+            if (currHealth < health && (currHealth + go.ValueRestored < health))
+                currHealth += go.ValueRestored;
+            else
+                currHealth = health; 
+            go.Pickup();
+            Destroy(other.gameObject, 0.05f);
+        }
+
+        if (other.gameObject.tag.Equals("Bullets"))
+        {
+            var go = other.gameObject.GetComponent<PickupManager>();
+            bullets += go.ValueRestored;
+            go.Pickup();
+            Destroy(other.gameObject, 0.05f);
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag.Equals("Enemy"))
+        if (collision.gameObject.tag.Equals("Enemy") && collision.gameObject.GetComponentInParent<Enemy>().CanAttack)
+        {
+            currHealth -= collision.gameObject.GetComponentInParent<Enemy>().DamageToPlayer;
+            StartCoroutine(collision.gameObject.GetComponentInParent<Enemy>().AttackReset());
+            GameManager.Instance.UpdateUI();
+            AudioSource.PlayClipAtPoint(getHitSound, transform.position);
+            if (currHealth <= 0)
+            {
+                PlayerLose();
+            }
+        }
+
+        if (collision.gameObject.tag.Equals("Spike"))
         {
             PlayerLose();
         }
@@ -245,6 +288,8 @@ public class PlayerMovement : MonoBehaviour
 
     void PlayerLose()
     {
+        currHealth = 0;
+        GameManager.Instance.UpdateUI();
         AudioSource.PlayClipAtPoint(loseSound, transform.position);
         GameObject deathParticles = Instantiate(loseParticles, transform.position, Quaternion.identity);
         deathParticles.GetComponent<ParticleSystem>().Play();

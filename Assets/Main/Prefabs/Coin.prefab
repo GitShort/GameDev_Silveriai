@@ -59,12 +59,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54ad1588a409215459d06c2c16d83d1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coinModel: {fileID: 6917965214965075441}
   pickupSound: {fileID: 8300000, guid: 39746d9e3c5b776418c747eea4a4c491, type: 3}
   rotationSpeed: 0.1
   floatAmplitude: 0.5
   floatFrequency: 0.5
   destroyParticles: {fileID: 120410, guid: 6636b3078b0905e489f698a11b7a6b6b, type: 3}
+  model: {fileID: 6917965214965075441}
+  healthRestored: 1
 --- !u!1 &6917965214965075441
 GameObject:
   m_ObjectHideFlags: 0

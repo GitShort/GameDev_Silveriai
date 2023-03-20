@@ -11,15 +11,21 @@ public class Enemy : MonoBehaviour
     bool playerInSightRange;
     [SerializeField] int health;
     [SerializeField] float sightRange;
+    [SerializeField] int damageToPlayer = 2;
+    bool canAttack = true;
 
     [Header("Other")]
     [SerializeField] Animator anim;
     [SerializeField] LayerMask playerMask;
     [SerializeField] GameObject destroyParticles;
 
+    public int DamageToPlayer { get { return damageToPlayer; } set { damageToPlayer = value; } }
+    public bool CanAttack { get { return canAttack; } set { canAttack = value; } }
+
     // Start is called before the first frame update
     void Start()
     {
+        canAttack = true;
         agent = GetComponent<NavMeshAgent>();
     }
 
@@ -49,6 +55,13 @@ public class Enemy : MonoBehaviour
 
             Destroy(this.gameObject);
         }
+    }
+
+    public IEnumerator AttackReset()
+    {
+        canAttack = false;
+        yield return new WaitForSeconds(.5f);
+        canAttack = true;
     }
 
     private void OnDrawGizmosSelected()
